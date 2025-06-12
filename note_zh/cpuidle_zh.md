@@ -24,7 +24,7 @@ Linux 的 cpuidle 框架會根據 CPU 型號載入對應的 idle 驅動：
 
 ## 如何查看你系統使用哪個 idle 驅動？
 你可以在 Linux 終端機輸入以下指令：
-```
+```bash
 $ cat /sys/devices/system/cpu/cpuidle/current_driver
 ```
 
@@ -32,8 +32,6 @@ $ cat /sys/devices/system/cpu/cpuidle/current_driver
 - intel_idle
 - acpi_idle
 - psci（ARM 平台）
-
-
 
 ## 什麼是 Disable `cpuidle`？
 
@@ -87,25 +85,26 @@ $ cat /sys/devices/system/cpu/cpuidle/current_driver
 
 
 ### 如何加入 Kernel Parameter to Disable `cpuidle`
-```
+```bash
 $ sudo nano /etc/default/grub
-$ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash cpuidle.off=1"
+# 加入以下這行在檔案中
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash cpuidle.off=1"
 $ sudo update-grub
 $ sudo reboot
 ```
 
 ### 如何驗證成功 Disable `cpuidle`
 **1. 確認使用的 Kernel Param 有被加入到**
-```
+```bash
 $ cat /proc/cmdline
 BOOT_IMAGE=/boot/vmlinuz-6.11.0-9002-oem root=UUID=... ro quiet splash intel_idle.max_cstate=0  processor.max_cstate=1
 ```
 **2. 確認 `max_cstate` 數值是 `0` or kernel params 的設定值**
-```
+```bash
 $ sudo cat /sys/module/processor/parameters/max_cstate
 ```
-**3. 確認 `cpuidle` driver 沒有作用, return nothing or error**
-```
+**3. 確認 `cpuidle` driver 沒有作用 (return nothing or error)**
+```bash
 $ sudo cat /sys/devices/system/cpu/cpuidle/current_driver
 ```
 
