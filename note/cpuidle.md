@@ -84,8 +84,6 @@ This keeps the CPU in an **active or shallow idle state**, avoiding deeper power
 | Disable deep C-states only    | 2, 3                   |
 | Light performance tuning      | 5                      |
 
----
-
 ### How to Add Kernel Parameters to Disable `cpuidle`
 
 ```bash
