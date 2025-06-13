@@ -91,6 +91,7 @@ sudo systemctl stop apport.service
 ## 延伸 Core Dump
 
 > [! NOTE]
+> 
 > - Apport 使用自己的 core dump 機制, 並不完全依賴 ulimit -c 來決定是否產生 core dump
 > - 當 core dump 被導向 Apport（透過 core_pattern 設定）, Apport 會主動從記憶體中擷取核心資訊, 並壓縮成 CoreDump.gz, 即使 ulimit -c 是 0
 > - 這是 Ubuntu 的預設行為, 目的是讓開發者能夠在使用者不需額外設定的情況下, 仍然取得完整的錯誤診斷資訊。
@@ -214,6 +215,7 @@ kernel.core_pattern=/var/crash/core.%e.%p.%t
 ```
 
 > [! NOTE]
+> 
 > - Core dump 可能包含敏感資訊（如密碼、金鑰）, 不應隨意分享。
 > - 在生產環境中通常會關閉或限制 core dump。
 > - 可搭配 `systemd-coredump` 或 `Apport` 自動收集與管理。
