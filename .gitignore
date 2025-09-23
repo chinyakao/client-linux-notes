@@ -1,0 +1,7 @@
+kernel_builder/*/src/*/
+*.patch
+*.deb
+*.buildinfo
+*.changes
+*.tar.gz
+*.dsc
