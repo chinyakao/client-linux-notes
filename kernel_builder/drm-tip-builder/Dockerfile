@@ -36,4 +36,5 @@ RUN apt update && apt install -y \
 RUN useradd -ms /bin/bash builder
 USER builder
 
-WORKDIR /home/builder/kernel
+RUN mkdir -p /home/builder/kernel-src /home/builder/kernel-out
+WORKDIR /home/builder/kernel-src
