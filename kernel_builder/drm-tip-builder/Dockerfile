@@ -1,37 +1,37 @@
 FROM ubuntu:24.04
 
 RUN apt update && apt install -y \
-    build-essential \
-    libncurses-dev \
-    bison \
-    flex \
-    libssl-dev \
-    libelf-dev \
     bc \
-    git \
-    wget \
-    curl \
+    bison \
+    build-essential \
+    ca-certificates \
     ccache \
-    libdrm-dev \
-    libncurses5-dev \
-    libncursesw5-dev \
-    libudev-dev \
-    libpci-dev \
-    libiberty-dev \
-    pkg-config \
-    vim \
+    curl \
+    debhelper-compat \
+    dpkg-dev \
+    fakeroot \
+    flex \
     gawk \
     gcc \
-    make \
-    dpkg-dev \
-    zstd \
-    debhelper-compat \
-    fakeroot \
+    git \
     kmod \
+    libdrm-dev \
     libdw-dev:native \
+    libelf-dev \
+    libiberty-dev \
+    libncurses-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    libpci-dev \
+    libssl-dev \
+    libudev-dev \
+    make \
+    pkg-config \
     python3:native \
     rsync \
-    ca-certificates
+    vim \
+    wget \
+    zstd
 
 RUN useradd -ms /bin/bash builder
 USER builder

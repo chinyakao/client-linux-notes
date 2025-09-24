@@ -31,7 +31,6 @@ Docker is a platform that allows you to **build, run, and manage containers**. C
 - Website: https://hub.docker.com
 
 
-
 ## Common Docker Commands
 
 | Command | Description |
@@ -42,6 +41,7 @@ Docker is a platform that allows you to **build, run, and manage containers**. C
 | `docker load < <image>.tar` | Loads an image from a .tar file |
 | `docker run <image>` | Run a container |
 | `docker run -it <image> /bin/bash` | Run a container with interactive bash terminal |
+| `docker run -it --user root <image-name> /bin/bash` | Run a container as root user |
 | `docker exec -it <container-id or name> /bin/bash` | Enter a running container with bash |
 | `docker ps` | List running containers |
 | `docker ps -a` | List all containers (including stopped ones)|
@@ -54,7 +54,7 @@ Docker is a platform that allows you to **build, run, and manage containers**. C
 | `docker image prune -a` | Remove all unused image |
 
 
-## 🧪 Example: Running a Simple Web Server
+## Example: Running a Simple Web Server
 
 ```bash
 docker run -d -p 8080:80 nginx
@@ -68,7 +68,7 @@ Visit `http://localhost:8080` to see the web server.
 
 
 
-## 📂 Dockerfile Example for Python App
+## Dockerfile Example for Python App
 
 ```Dockerfile
 FROM python:3.10
@@ -87,12 +87,9 @@ docker run my-python-app
 
 
 
-## 🧼 Clean Up Tips
+## Clean Up Tips
 
 ```bash
 docker system prune
 ```
 - Removes unused containers, images, and networks.
-
-
-Would you like this formatted into a downloadable PDF or Markdown file? Or do you want a version in Chinese as well?
