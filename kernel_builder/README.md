@@ -1,8 +1,9 @@
 # Build Linux Kernel from Docker
 
 ## Setup
-1. Create a builder directory with below structure
+1. Create and Enter the builder directory with below structure
     ```
+    xxxx-kernel-builder
     ├── config
     │   ├── <exist-kernel-config>.config
     ├── output
@@ -10,26 +11,21 @@
     ├── patch
     │   ├── *.patch
     └── src
-        ├── <kernel-repo>
+        └── <kernel-source-code>
     ```
-2. 
 
-## Build Steps
-1. Enter Builder Environment
-    ```
-    cd <xxxx-kernel-builder>
-    ```
-2. Clone Kernel Source
+2. Clone or Download Kernel Source
     ```
     git clone <kernel-repo> src/<kernel-repo>
+    git checkout <tag-or-branch> # if needed
+    ```
+    or
+    ```
+    wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.0.10.tar.xz
+    tar xvf linux-6.0.10.tar.xz
     ```
 
-3. Checkout tag or branch
-    ```
-    git checkout <tag-or-branch>
-    ```
-
-4. Apply Patch
+3. Apply Patch (If needed)
     ```
     git apply ./patch/<file.patch> --verbose
     ```
@@ -39,12 +35,34 @@
     ```
     [Note: `git am` vs `git apply`](../note/git_patch.md)
 
-5. Copy Kernel Config to Kernel Source
+4. Copy Kernel Config to Kernel Source
     ```
     cp ./config/<exist-kernel-config> ./src/<kernel-repo>/.config
     ```
+    or copy from system
+    ```
+    cp /boot/config-`uname -r` ./src/<kernel-repo>/.config
+    ```
+    > Note: Remove `cert key` in conifg file.
+    >   
+    >   ```
+    >   # (Original)
+    >   CONFIG_SYSTEM_TRUSTED_KEYS="debian/canonical-certs.pem"
+    >   CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
+    >   ```
+    >   ```
+    >   # (Revised)
+    >   CONFIG_SYSTEM_TRUSTED_KEYS=""
+    >   CONFIG_SYSTEM_REVOCATION_KEYS=""
+    >   ```
 
-6. Create a `Dockerfile`
+## Build Steps
+1. Enter Builder Environment
+    ```
+    cd <xxxx-kernel-builder>
+    ```
+
+2. Create a `Dockerfile`
     ```
     FROM ubuntu:24.04
 
@@ -62,11 +80,12 @@
     WORKDIR /home/builder/kernel-src
     ``` 
 
-7. Build Docker image
+3. Build Docker image
     ```
     sudo docker build -t <image-name> .
     ```
-8. Run Docker Container
+
+4. Run Docker Container
     ```
     sudo docker run -it --rm \
         -v "$(pwd)/src/<kernel-repo>:/home/builder/kernel-src" \
@@ -74,15 +93,18 @@
         <image-name>
     ```
     [Note: Docker Common Commands](../note/docker.md)
-9. Start to Build Kernel
+
+5. Start to Build Kernel
     ```
     make oldconfig
 
-    make -j $(nproc) deb-pkg LOCALVERSION=<version-name> 2>&1 | tee "../linux-kernel-build_$(date +%Y%m%d_%H%M%S).log" 2>&1
+    make -j $(nproc) bindeb-pkg LOCALVERSION=<version-name> 2>&1 | tee "../linux-kernel-build_$(date +%Y%m%d_%H%M%S).log" 2>&1
 
     mkdir -p ../kernel-out/<version-name>
     mv ../linux-* /home/builder/kernel-out/<version-name>
+    exit
     ```
+    [Note: `make deb-pkg` vs `make bindeb-pkg`](../note/make_deb.md)
 
 ## Install Custom-built kernel
 - Required:
@@ -109,7 +131,23 @@
     sudo apt --fix-broken install
     ```
 
+## Check & Boot into Custom-built Kernel
+reboot and keep pressing f4 to get into "GRUB menu", then select custom-built kernel in "Advance boot option"
+
+## Troubleshooting
+- Grep the error from the build log
+    - `grep -i "error" ./output/linux-kernel-build_*.log`
+    - `grep -i "failed" ./output/linux-kernel-build_*.log`
+    - `grep -i "not found" ./output/linux-kernel-build_*.log`
+    - `grep -i "Unmet build dependencies" ./output/linux-kernel-build_*.log`
+
+- Solve the error: `No rule to make target ‘debian/canonical-certs.pem‘, needed by ‘certs/x509_certificate_list‘`
+https://unix.stackexchange.com/questions/293642/attempting-to-compile-kernel-yields-a-certification-error/649484#649484
+- Solve the error: `/bin/sh: 1:zstd: not found`
+https://forum.openwrt.org/t/ubuntu-20-04-compile-zstd-error/66619
+
 ###### REF
 - https://www.kernel.org/
 - https://docs.kernel.org/
 - https://kernelnewbies.org/KernelBuild
+- https://wiki.ubuntu.com/KernelTeam/GitKernelBuild
