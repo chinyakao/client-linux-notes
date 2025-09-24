@@ -23,6 +23,7 @@
     ```
     git am ./patch/<file.patch>
     ```
+    [Note: `git am` vs `git apply`](../note/git_patch.md)
 
 5. Copy Kernel Config to Kernel Source
     ```
@@ -58,6 +59,7 @@
         -v "$(pwd)/output:/home/builder/kernel-out" \
         <image-name>
     ```
+    [Note: Docker Common Commands](../note/docker.md)
 9. Start to Build Kernel
     ```
     make oldconfig
@@ -91,30 +93,4 @@
     If there are dependency issues, you can fix them with:
     ```
     sudo apt --fix-broken install
-    ```
-
-## Common Usage
-- Check docker image
-    ```
-    sudo docker images
-    ```
-- Delete Docker image
-    ```
-    sudo docker rmi <image-name-or-id>
-    ```
-- Delete all unused Docker image
-    ```
-    sudo docker image prune -a
-    ```
-- Check docker container
-    ```
-    sudo docker ps -a
-    ```
-- Stop Docker container
-    ```
-    sudo docker stop <container-name-or-id>
-    ```
-- Delete Docker container
-    ```
-    sudo docker rm <container-name-or-id>
     ```

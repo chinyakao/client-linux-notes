@@ -4,5 +4,6 @@ kernel_builder/*/src/*/
 *.buildinfo
 *.changes
 *.tar.gz
+*.tar.xz
 *.dsc
 *.log
