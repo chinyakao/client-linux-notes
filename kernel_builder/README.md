@@ -1,5 +1,19 @@
 # Build Linux Kernel from Docker
 
+## Setup
+1. Create a builder directory with below structure
+    ```
+    ├── config
+    │   ├── <exist-kernel-config>.config
+    ├── output
+    │   ├── <builded-kernel-files>.deb
+    ├── patch
+    │   ├── *.patch
+    └── src
+        ├── <kernel-repo>
+    ```
+2. 
+
 ## Build Steps
 1. Enter Builder Environment
     ```
@@ -94,3 +108,8 @@
     ```
     sudo apt --fix-broken install
     ```
+
+###### REF
+- https://www.kernel.org/
+- https://docs.kernel.org/
+- https://kernelnewbies.org/KernelBuild
