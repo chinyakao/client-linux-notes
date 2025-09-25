@@ -19,7 +19,7 @@ drm-tip-builder
 
 ## Clone git
 ```
-git clone https://gitlab.freedesktop.org/drm/tip.git
+git clone https://gitlab.freedesktop.org/drm/tip.git ./src/tip
 ```
 
 ###### REF
