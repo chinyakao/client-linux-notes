@@ -20,7 +20,7 @@ archives-builder
 
 ## Download Source Code
 ```
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.0.10.tar.xz
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.16.8.tar.xz
 tar xvf linux-6.16.8.tar.xz
 cd linux-6.16.8
 ```
