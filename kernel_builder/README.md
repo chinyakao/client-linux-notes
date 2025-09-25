@@ -94,17 +94,27 @@
     ```
     [Note: Docker Common Commands](../note/docker.md)
 
-5. Start to Build Kernel
+5. Make config from copyed config file
     ```
     make oldconfig
+    ```
 
+6. Build Kernel with log output
+    ```
     make -j $(nproc) bindeb-pkg LOCALVERSION=<version-name> 2>&1 | tee "../linux-kernel-build_$(date +%Y%m%d_%H%M%S).log" 2>&1
-
-    mkdir -p ../kernel-out/<version-name>
-    mv ../linux-* /home/builder/kernel-out/<version-name>
-    exit
     ```
     [Note: `make deb-pkg` vs `make bindeb-pkg`](../note/make_deb.md)
+
+7. Move Built Files to ouput directory
+    ``` 
+    mkdir -p ../kernel-out/<version-name>
+    mv ../linux-* /home/builder/kernel-out/<version-name>
+    ```
+
+8. Exit Docker Container
+    ```
+    exit
+    ```
 
 ## Install Custom-built kernel
 - Required:
