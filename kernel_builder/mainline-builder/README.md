@@ -17,9 +17,10 @@ mainline-builder
 └── Dockerfile
 ```
 
-## Switch git branch and tag
+## Clone and Switch git branch/tag
 
 ```
+git clone git://git.launchpad.net/~ubuntu-kernel-test/ubuntu/+source/linux/+git/mainline-crack
 git tag -l | grep -i <target-version>
 git checkout <tag-or-branch e.g., tags/cod/tip/drm-tip/2025-09-10 or cod/mainline/v6.17-rc7>
 ```
