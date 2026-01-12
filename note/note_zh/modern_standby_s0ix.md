@@ -1,4 +1,10 @@
 # What is Linux s2idle?
+s2idle 是 Linux 在 ACPI 電源管理架構下的一種睡眠模式，全名 Suspend-to-Idle。它是 Linux 對應 Modern Standby (S0ix) 的實作，屬於 ACPI S0 工作狀態的延伸，而非傳統的 S3 (Suspend-to-RAM)。
+在 s2idle 模式下：
+  - 系統看似休眠，但仍保持在 S0 電源狀態。
+  - CPU 和記憶體仍有部分供電，裝置可以選擇進入低功耗。
+  - 支援快速喚醒，類似手機的待機。
+
 ## Modern Standby (S0ix) (= Linux s2idle) 
 - 定義：Modern Standby 是 Windows 平台上的一種低功耗待機模式，屬於 S0 (工作狀態) 的延伸，讓系統在待機時仍能保持網路連線、背景同步，類似手機的「待機」。
 - 特點：
