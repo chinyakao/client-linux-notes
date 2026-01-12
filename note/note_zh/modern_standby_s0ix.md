@@ -16,7 +16,7 @@
     - 喚醒速度比休眠快，但比 Modern Standby 慢。
     - 廣泛支援於 Linux、Windows 與舊硬體。
 
-## Linux 相關常用
+## Command
 ### `$ systemctl suspend`
 - `systemctl suspend` 所對應的睡眠模式取決於系統的 `/sys/power/mem_sleep` 設定：
     - 如果硬體與核心支援 S3 (Suspend-to-RAM)，則會進入 S3。
