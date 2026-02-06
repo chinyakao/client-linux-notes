@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # =========================
+# Pre-install:
+# sudo apt-get install -y stress-ng linux-tools-common linux-tools-generic
 # Run by root: 
 # sudo ./thermal_stress_test.sh
 # sudo OUT_ROOT=./logs INTERVAL=1 CPU_WORKERS=8 ./thermal_stress_test.sh
