@@ -57,6 +57,10 @@
     >   ```
 
 ## Build Steps
+0. (optional) allows terminal sessions to persist independently of SSH connections
+    ```
+    tmux new -s <session-name>
+    ```
 1. Enter Builder Environment
     ```
     cd <xxxx-kernel-builder>
