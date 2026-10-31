@@ -1,7 +1,3 @@
-Below is a **clean, pure‑text English note** summarizing **tmux usage for server-side long‑running tasks** (e.g. kernel build).  
-It **does NOT include PowerShell or Windows content**, and is suitable for a personal README or wiki.
-
-***
 
 # tmux Notes (Server-Side Usage)
 
