@@ -1,4 +1,10 @@
 # Build Kernel Module - dell_wmi_sysman
+
+> **Source:** the `.c` / `.h` files here are copied from the upstream Linux kernel
+> ([drivers/platform/x86/dell/dell-wmi-sysman](https://github.com/torvalds/linux/tree/master/drivers/platform/x86/dell/dell-wmi-sysman),
+> GPL-2.0, Copyright Dell Inc.). This folder is an exercise in building an in-tree driver
+> out of tree, replacing the loaded module, and adding debug output. It is not original work.
+
 Kernel Version: Linux u-Vostro-3420 5.14.0-1054-oem #61-Ubuntu SMP Fri Oct 14 13:05:50 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 ## Create Module
 1. Download folder https://github.com/torvalds/linux/tree/master/drivers/platform/x86/dell/dell-wmi-sysman
