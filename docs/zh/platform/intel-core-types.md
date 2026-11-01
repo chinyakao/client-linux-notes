@@ -27,6 +27,7 @@ lang: zh
 
 ## CPU die vs SoC die
 兩者都是“核心”，但用途完全不同。
+
 | Die (Tile) | 會出現的核心類型 | 用途 |
 | ------------- | ------------- | ------------- |
 | CPU die / Compute tile | P‑cores、E‑cores | 一般運算、遊戲、多工 |

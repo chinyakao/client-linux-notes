@@ -58,6 +58,7 @@ mkdir crash_report
 apport-unpack /var/crash/_usr_bin_python3.1000.crash crash_report/
 ```
 會產出以下檔案:
+
 | 檔案名稱 | 說明 |
 | --- | --- |
 | Stacktrace.txt | 錯誤發生時的堆疊追蹤 |

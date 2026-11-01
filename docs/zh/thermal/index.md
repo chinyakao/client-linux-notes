@@ -105,6 +105,7 @@ lang: zh
     **參考**：thermald 專案 README、kernel 對 DPTF sysfs 的說明。    [\[github.com\]](https://github.com/intel/thermal_daemon), [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
 
 5. Table  
+
     | 項目   | Intel DPTF                   | Intel DTT                         | thermald                        |
     | ---- | ---------------------------- | --------------------------------- | ------------------------------- |
     | 主要平台 | Windows (Linux 支援有限)           | Windows 10/11                     | Linux                           |
