@@ -58,6 +58,7 @@ mkdir crash_report
 apport-unpack /var/crash/_usr_bin_python3.1000.crash crash_report/
 ```
 It produces these files:
+
 | File | Description |
 | --- | --- |
 | Stacktrace.txt | Stack trace at the time of the error |
