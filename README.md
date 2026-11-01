@@ -1,19 +1,19 @@
-# Linux Training
+# Linux Platform Enablement Notes
 
 Notes, scripts, and build environments from my work as a Linux platform engineer.
 
-**Read it as a website: <https://chinyakao.github.io/linux_training/>**
+**Read it as a website: <https://chinyakao.github.io/linux-platform-enablement/>**
 
 ## Layout
 
 | Path | What's inside |
 |---|---|
-| [`docs/`](docs/) | All notes, published with GitHub Pages: kernel build, power management, thermal, graphics, debugging. |
+| [`docs/`](docs/) | All notes, published with GitHub Pages in English ([`docs/en/`](docs/en/)) and Traditional Chinese ([`docs/zh/`](docs/zh/)): kernel build, power management, thermal, graphics, debugging. |
 | [`kernel_builder/`](kernel_builder/) | Dockerfiles and kernel configs for mainline, kernel.org archives, Torvalds upstream, Intel drm-tip, and Ubuntu OEM 6.14 / 6.17. |
 | [`thermal_stress_test.sh`](thermal_stress_test.sh) | Staged CPU load while logging thermal zones, cooling devices, cpufreq, turbostat, and thermald to CSV. |
 | [`analyze_compare.py`](analyze_compare.py) | Summarizes one stress test run or compares two. |
 
-Files ending in `_zh.md` are in Traditional Chinese.
+Every note exists at the same path under `docs/en/` and `docs/zh/`; the site links each page to its translation.
 
 ## Related repositories
 

@@ -1,0 +1,20 @@
+{%- comment -%}
+  Language switch: every page under /en/ has a twin at the same path under
+  /zh/ and the other way around.
+{%- endcomment -%}
+{%- if page.lang == "en" -%}
+  {%- assign other_url = page.url | replace_first: "/en/", "/zh/" -%}
+  {%- assign other_label = "中文" -%}
+{%- elsif page.lang == "zh" -%}
+  {%- assign other_url = page.url | replace_first: "/zh/", "/en/" -%}
+  {%- assign other_label = "English" -%}
+{%- endif -%}
+{%- if other_url -%}
+<nav aria-label="Language" class="aux-nav lang-switch">
+  <ul class="aux-nav-list">
+    <li class="aux-nav-list-item">
+      <a href="{{ other_url | relative_url }}" class="site-button" lang="{% if page.lang == 'en' %}zh-Hant{% else %}en{% endif %}">{{ other_label }}</a>
+    </li>
+  </ul>
+</nav>
+{%- endif -%}
