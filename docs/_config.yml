@@ -1,0 +1,29 @@
+title: Linux Training
+description: Notes from Linux platform work on Ubuntu laptops and desktops
+url: "https://chinyakao.github.io"
+baseurl: "/linux_training"
+remote_theme: just-the-docs/just-the-docs@v0.10.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+relative_links:
+  enabled: true
+  collections: false
+
+search_enabled: true
+heading_anchors: true
+color_scheme: light
+
+aux_links:
+  "GitHub": "https://github.com/chinyakao/linux_training"
+aux_links_new_tab: true
+
+gh_edit_link: true
+gh_edit_link_text: "Edit this page on GitHub"
+gh_edit_repository: "https://github.com/chinyakao/linux_training"
+gh_edit_branch: "main"
+gh_edit_source: docs
+gh_edit_view_mode: "tree"
+
+footer_content: "Written by Riley Kao. Files ending in _zh are in Traditional Chinese."
