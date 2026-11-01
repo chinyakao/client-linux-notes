@@ -1,6 +1,7 @@
 # Linux Platform Enablement Notes
 
-Notes, scripts, and build environments from my work as a Linux platform engineer.
+Notes, scripts, and build environments for Linux platform work, collected from
+what I used and learned on the job.
 
 **Read it as a website: <https://chinyakao.github.io/linux-platform-enablement/>**
 
