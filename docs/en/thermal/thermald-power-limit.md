@@ -52,17 +52,18 @@ lang: en
     $ sudo thermald --no-daemon --loglevel=debug --adaptive > thermald_log.log
     ```
 
-    Set matched:1 -> This means the condition_set 1 in APCT is matched, as follows:
+    The excerpt below is an illustrative example: the timestamps, ACPI paths, and values are
+    generic, not taken from a specific machine.
+
+    `Set matched:1` means condition_set 1 in the APCT is matched:
     ```
     [INFO]..apct dump begin..
     [INFO]condition_set 1
     [INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [INFO] target:1 device:\_SB_.IETM condition:Oem1 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [INFO] target:1 device:\_SB_.IETM condition:Oem2 comparison:ADAPTIVE_EQUAL argument:1 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3272 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
+    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3232 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
     ```
-    target:1 -> This means the policy with target_id:1 will be loaded.
-    Here, PL1MAX and PL2PowerLimit are both set to 40W, and the PSVT table "example-psvt" will be applied.
+    `target:1` means the policy with target_id 1 is loaded.
+    In this example, PL1MAX and PL2PowerLimit are both 40W, and the PSVT table `example-psvt` is applied.
 
     ```
     [INFO]..apat dump begin..
@@ -70,15 +71,15 @@ lang: en
     [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
     [INFO]target_id:1 name:example-psvt participant:\_SB_.IETM domain:14 code:PSVT argument:example-psvt
     ```
-    Below is the definition of "example-psvt". It defines which PL1 is set at which sensor temperature.
-    So, under 50℃, PL1 is MAX, that is, 40W.
+    The PSVT entry defines which PL1 is set at which sensor temperature.
+    Here, under 50℃ PL1 is MAX (40W); from 60℃ it drops to 25W, and from 70℃ to 20W.
 
     ```
     [INFO]..psvt dump begin..
     [INFO]Name :example-psvt
     [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
-    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:55 domain:9 control_knob:65536 psv.limit:20000
-    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:65 domain:9 control_knob:65536 psv.limit:20000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:60 domain:9 control_knob:65536 psv.limit:25000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:70 domain:9 control_knob:65536 psv.limit:20000
     ```
 
 ## In Practice: Finding Out "Who Controls PL1/PL2" on Ubuntu

@@ -52,33 +52,33 @@ lang: zh
     $ sudo thermald --no-daemon --loglevel=debug --adaptive > thermald_log.log
     ```
 
-    Set matched:1 -> This means the condition_set 1 in APCT is matched, as follow:
+    以下是示意用的範例：時間戳記、ACPI 路徑和數值都是通用值，不是取自特定機器。
+
+    `Set matched:1` 代表 APCT 裡的 condition_set 1 條件成立：
     ```
     [INFO]..apct dump begin..
     [INFO]condition_set 1
-    [INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [INFO] target:1 device:\_SB_.IETM condition:Oem1 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [INFO] target:1 device:\_SB_.IETM condition:Oem2 comparison:ADAPTIVE_EQUAL argument:1 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3272 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
+    [INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
+    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3232 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
     ```
-    target:1 -> This means the policy: target_id:1 will be loaded.
-    Here, the PL1MAX and PL2PowerLimit are both set as 40W. And, the PSVT table “example-psvt” will be applied.
+    `target:1` 代表會載入 target_id 為 1 的 policy。
+    這個例子裡 PL1MAX 和 PL2PowerLimit 都是 40W，並套用 PSVT 表 `example-psvt`。
 
     ```
-    [INFO]..apat dump begin.. 
+    [INFO]..apat dump begin..
     [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL1MAX argument:40000
     [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
     [INFO]target_id:1 name:example-psvt participant:\_SB_.IETM domain:14 code:PSVT argument:example-psvt
     ```
-    Follows is the definition “example-psvt”. This defines under which condition of the sensor temperature, which PL1 will be set.
-    So, under 50℃, the PL1 is as MAX, aka, 40W.
+    PSVT 定義感測器在什麼溫度時要把 PL1 設成多少。
+    這裡 50℃ 以下 PL1 是 MAX（40W），60℃ 起降到 25W，70℃ 起降到 20W。
 
     ```
     [INFO]..psvt dump begin..
     [INFO]Name :example-psvt
     [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
-    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:55 domain:9 control_knob:65536 psv.limit:20000
-    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:65 domain:9 control_knob:65536 psv.limit:20000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:60 domain:9 control_knob:65536 psv.limit:25000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:70 domain:9 control_knob:65536 psv.limit:20000
     ```
 
 ## 實作與驗證：如何在 Ubuntu 上釐清「誰在主導 PL1/PL2」？
