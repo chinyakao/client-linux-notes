@@ -11,8 +11,8 @@ what I used and learned on the job.
 |---|---|
 | [`docs/`](docs/) | All notes, published with GitHub Pages in English ([`docs/en/`](docs/en/)) and Traditional Chinese ([`docs/zh/`](docs/zh/)): kernel build, power management, thermal, graphics, debugging. |
 | [`kernel_builder/`](kernel_builder/) | Dockerfiles and kernel configs for mainline, kernel.org archives, Torvalds upstream, Intel drm-tip, and Ubuntu OEM 6.14 / 6.17. |
-| [`thermal_stress_test.sh`](thermal_stress_test.sh) | Staged CPU load while logging thermal zones, cooling devices, cpufreq, turbostat, and thermald to CSV. |
-| [`analyze_compare.py`](analyze_compare.py) | Summarizes one stress test run or compares two. |
+| [`tools/thermal/thermal_stress_test.sh`](tools/thermal/thermal_stress_test.sh) | Staged CPU load while logging thermal zones, cooling devices, cpufreq, turbostat, and thermald to CSV. |
+| [`tools/thermal/analyze_compare.py`](tools/thermal/analyze_compare.py) | Summarizes one stress test run or compares two. |
 
 Every note exists at the same path under `docs/en/` and `docs/zh/`; the site links each page to its translation.
 
