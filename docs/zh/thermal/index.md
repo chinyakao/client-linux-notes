@@ -33,7 +33,7 @@ lang: zh
         - Virtual sensors
     • OEM tuning: PL1/PL2 limits, skin temp, chassis temp
     • RAPL defaults (via MSR/MMIO)
-    → 這裡會存 policy table e.g., optimized‑28h  
+    → 這裡會存 policy table e.g., example-psvt  
 ──────────────────────────────────────────────
 [ Layer 0: Hardware / Sensors ]
     • CPU thermal sensor / DTS
@@ -93,13 +93,13 @@ lang: zh
     → thermald 是 Linux 的 userspace daemon，不依賴 DPTF，不依賴 DTT，是獨立的 Linux 解決方案。
     - Ubuntu 使用 **thermald 能做的**  
         - 監控 thermal zone (/sys/class/thermal) 
-        - 能讀 ACPI DPTF tables (如 PSVT: optimized‑28h)
+        - 能讀 ACPI DPTF tables (如 PSVT: example-psvt)
         - 能做 passive cooling：降頻 (cpufreq/intel\_pstate) 、風扇、powerclamp
         - 但 **無法執行 DPTF 的完整 policy (Adaptive Performance, Power Boss…)**  
     - Ubuntu 使用 **thermald 做不到的(或不完整)**  
         - **ESIF/Policy Manager** 全功能 (如 Adaptive Performance、Power Boss、Virtual Sensor、Cooling Mode 等) 
         - 平臺級 **PL1/PL2/Tau** 策略協同 (尤其是 MMIO/EC/Charger/GPU/Battery 聯動)  
-        → thermald 可能嘗試依 optimized‑28h 把 PL1 降成 20W  
+        → thermald 可能嘗試依 example-psvt 把 PL1 降成 20W  
         → 但 **平台 MMIO 層可能把 PL1 改回 40W** (見下一段)   
       
     **參考**：thermald 專案 README、kernel 對 DPTF sysfs 的說明。    [\[github.com\]](https://github.com/intel/thermal_daemon), [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
@@ -141,14 +141,14 @@ lang: zh
     **參考**：Linux kernel DPTF 文件、thermald 專案。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[github.com\]](https://github.com/intel/thermal_daemon)
 
 
-> **關鍵觀念**：Ubuntu 會「看得到」 firmware 中的 DPTF 策略名稱與表 (如 `optimized‑28h`) ，但多半 **只是讀取/列印**，不會像 ChromeOS/Windows 那樣用 ESIF/Policy Manager 完整落地。
+> **關鍵觀念**：Ubuntu 會「看得到」 firmware 中的 DPTF 策略名稱與表 (如 `example-psvt`) ，但多半 **只是讀取/列印**，不會像 ChromeOS/Windows 那樣用 ESIF/Policy Manager 完整落地。
 
 ## 總結
 
 *   **Linux Thermal** 是內核原生熱管理；**DPTF** 是 Intel 的平臺級策略 (靠 ACPI/firmware) ，Linux 有驅動可讀取，但 **缺 ESIF**；**DTT** 是 Adaptix 的 runtime 調諧 (主要 Windows/OEM) 。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 *   **thermald** 在 Ubuntu 上只做「基礎降溫」，**不是** DPTF 的完整 policy engine。    [\[github.com\]](https://github.com/intel/thermal_daemon)
 *   **PL1/PL2/Tau** 決定長短期功耗與爆發；**MSR** 是 CPU 層的設定、**MMIO** 是平臺層設定，**MMIO 常覆蓋 MSR**。
-*   你看到的 **`optimized‑28h`** 是 **BIOS/ACPI 裡的 DPTF Passive Policy (PSVT)** 項目，Ubuntu 能「讀到」但未必能完整「執行」；實際是否生效由 **firmware/MMIO** 決定。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
+*   你看到的 **`example-psvt`** 是 **BIOS/ACPI 裡的 DPTF Passive Policy (PSVT)** 項目，Ubuntu 能「讀到」但未必能完整「執行」；實際是否生效由 **firmware/MMIO** 決定。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
 *   **ChromeOS** 因 Google+Intel 的完整整合 (ESIF/participants/policies/驗證) ，DPTF 充分落地；**Ubuntu** 通常只有讀表＋基礎 cooling，缺少 OEM 的完整 policy 與 ESIF。    [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 
 

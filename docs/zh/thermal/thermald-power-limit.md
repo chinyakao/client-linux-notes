@@ -15,7 +15,7 @@ lang: zh
 ```
 [ Firmware / ACPI ]
     - ACPI DPTF Tables (PSVT/ART/TRT/PPCC/...) 
-        → 定義 PL1 Max、降額政策（包含 optimized‑28h）
+        → 定義 PL1 Max、降額政策（包含 example-psvt）
     - OEM tuning
          ↓ (寫入平臺級參數)
 ────────────────────────────────────
@@ -32,7 +32,7 @@ lang: zh
 ────────────────────────────────────
 [ User Space ]
    - thermald：讀 ACPI → 試著調整 cooling / freq
-   - dptfxtract：解碼 ACPI 表（optimized‑28h 被讀到）
+   - dptfxtract：解碼 ACPI 表（example-psvt 被讀到）
 ```
 
 **常見 Ubuntu 情境：**
@@ -43,42 +43,42 @@ lang: zh
     **參考**：DPTF/ACPI 在 Linux 的資料路徑與 thermald 的角色。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 
 
-## Log 中看到的 `optimized‑28h` 規則如何解讀
+## Log 中看到的 `example-psvt` 規則如何解讀
 - **它是 BIOS/ACPI firmware 裡的 DPTF policy 定義（常見屬於 Passive Policy/PSVT 一類）。**
-- Linux（含 Ubuntu）透過 **INT340x** 驅動把 **data\_vault** 等 ACPI 二進位表 expose 出來；thermald 或工具（如 dptfxtract）可以 **dump/解碼** 出你看到的條目（如 `optimized‑28h`），**但不代表 Ubuntu 具備完整 DPTF 執行器**  
+- Linux（含 Ubuntu）透過 **INT340x** 驅動把 **data\_vault** 等 ACPI 二進位表 expose 出來；thermald 或工具（如 dptfxtract）可以 **dump/解碼** 出你看到的條目（如 `example-psvt`），**但不代表 Ubuntu 具備完整 DPTF 執行器**  
 - 這是 **Passive Policy（PSVT）** 的一段設定：依 **CPU 溫度** 分段下發 **PL1**  
     ```
     $ sudo systemctl stop thermald
     $ sudo thermald --no-daemon --loglevel=debug --adaptive > thermald_log.log
     ```
 
-    Set matched:1 -> This means the condition_set 1 in APCT is matched, as follow:
+    以下是示意用的範例：時間戳記、ACPI 路徑和數值都是通用值，不是取自特定機器。
+
+    `Set matched:1` 代表 APCT 裡的 condition_set 1 條件成立：
     ```
-    [1769055982][INFO]..apct dump begin..
-    [1769055982][INFO]condition_set 1
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem1 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem2 comparison:ADAPTIVE_EQUAL argument:1 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
-    [1769055982][INFO] target:1 device:\_SB_.PC00.LPCB.ECDV.TSKN condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3272 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0 
+    [INFO]..apct dump begin..
+    [INFO]condition_set 1
+    [INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
+    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3232 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
     ```
-    target:1 -> This means the policy: target_id:1 will be loaded.
-    Here, the PL1MAX and PL2PowerLimit are both set as 40W. And, the PSVT table “optimized-28h” will be applied.
+    `target:1` 代表會載入 target_id 為 1 的 policy。
+    這個例子裡 PL1MAX 和 PL2PowerLimit 都是 40W，並套用 PSVT 表 `example-psvt`。
 
     ```
-    [1769055982][INFO]..apat dump begin.. 
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.PC00.TCPU domain:9 code:PL1MAX argument:40000
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.IETM domain:14 code:PSVT argument:optimized-28h
+    [INFO]..apat dump begin..
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL1MAX argument:40000
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.IETM domain:14 code:PSVT argument:example-psvt
     ```
-    Follows is the definition “optimized-28h”. This defines under which condition of the sensor temperature, which PL1 will be set.
-    So, under 50℃, the PL1 is as MAX, aka, 40W.
+    PSVT 定義感測器在什麼溫度時要把 PL1 設成多少。
+    這裡 50℃ 以下 PL1 是 MAX（40W），60℃ 起降到 25W，70℃ 起降到 20W。
 
     ```
-    [1769055982][INFO]..psvt dump begin..
-    [1769055982][INFO]Name :optimized-28h
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:55 domain:9 control_knob:65536 psv.limit:20000
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:65 domain:9 control_knob:65536 psv.limit:20000
+    [INFO]..psvt dump begin..
+    [INFO]Name :example-psvt
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:60 domain:9 control_knob:65536 psv.limit:25000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:70 domain:9 control_knob:65536 psv.limit:20000
     ```
 
 ## 實作與驗證：如何在 Ubuntu 上釐清「誰在主導 PL1/PL2」？

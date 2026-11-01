@@ -15,7 +15,7 @@ lang: en
 ```
 [ Firmware / ACPI ]
     - ACPI DPTF Tables (PSVT/ART/TRT/PPCC/...)
-        → define PL1 Max and derating policies (including optimized‑28h)
+        → define PL1 Max and derating policies (including example-psvt)
     - OEM tuning
          ↓ (written into platform-level parameters)
 ────────────────────────────────────
@@ -32,7 +32,7 @@ lang: en
 ────────────────────────────────────
 [ User Space ]
    - thermald: reads ACPI → tries to adjust cooling / freq
-   - dptfxtract: decodes ACPI tables (optimized‑28h is read here)
+   - dptfxtract: decodes ACPI tables (example-psvt is read here)
 ```
 
 **Common Ubuntu scenario:**
@@ -43,42 +43,43 @@ lang: en
     **References**: the DPTF/ACPI data path on Linux and thermald's role. [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 
 
-## How to Read the `optimized‑28h` Rule in the Log
+## How to Read the `example-psvt` Rule in the Log
 - **It is a DPTF policy definition in the BIOS/ACPI firmware (usually a Passive Policy / PSVT entry).**
-- Linux (including Ubuntu) exposes ACPI binary tables such as **data\_vault** through the **INT340x** driver. thermald or tools (such as dptfxtract) can **dump/decode** the entries you see (such as `optimized‑28h`), **but that does not mean Ubuntu has a complete DPTF executor**.
+- Linux (including Ubuntu) exposes ACPI binary tables such as **data\_vault** through the **INT340x** driver. thermald or tools (such as dptfxtract) can **dump/decode** the entries you see (such as `example-psvt`), **but that does not mean Ubuntu has a complete DPTF executor**.
 - This is a **Passive Policy (PSVT)** setting: it sets **PL1** in steps according to **CPU temperature**.
     ```
     $ sudo systemctl stop thermald
     $ sudo thermald --no-daemon --loglevel=debug --adaptive > thermald_log.log
     ```
 
-    Set matched:1 -> This means the condition_set 1 in APCT is matched, as follows:
+    The excerpt below is an illustrative example: the timestamps, ACPI paths, and values are
+    generic, not taken from a specific machine.
+
+    `Set matched:1` means condition_set 1 in the APCT is matched:
     ```
-    [1769055982][INFO]..apct dump begin..
-    [1769055982][INFO]condition_set 1
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem1 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [1769055982][INFO] target:1 device:\_SB_.IETM condition:Oem2 comparison:ADAPTIVE_EQUAL argument:1 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
-    [1769055982][INFO] target:1 device:\_SB_.PC00.LPCB.ECDV.TSKN condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3272 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
+    [INFO]..apct dump begin..
+    [INFO]condition_set 1
+    [INFO] target:1 device:\_SB_.IETM condition:Oem0 comparison:ADAPTIVE_EQUAL argument:0 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
+    [INFO] target:1 device:\_SB_.PC00.LPCB.EC0.SEN1 condition:Temperature comparison:ADAPTIVE_LESSER_OR_EQUAL argument:3232 operation:AND time_comparison:0 time:0 stare:0 state_entry_time:0
     ```
-    target:1 -> This means the policy with target_id:1 will be loaded.
-    Here, PL1MAX and PL2PowerLimit are both set to 40W, and the PSVT table "optimized-28h" will be applied.
+    `target:1` means the policy with target_id 1 is loaded.
+    In this example, PL1MAX and PL2PowerLimit are both 40W, and the PSVT table `example-psvt` is applied.
 
     ```
-    [1769055982][INFO]..apat dump begin..
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.PC00.TCPU domain:9 code:PL1MAX argument:40000
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
-    [1769055982][INFO]target_id:1 name:optimized-28H participant:\_SB_.IETM domain:14 code:PSVT argument:optimized-28h
+    [INFO]..apat dump begin..
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL1MAX argument:40000
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.PC00.TCPU domain:9 code:PL2PowerLimit argument:40000
+    [INFO]target_id:1 name:example-psvt participant:\_SB_.IETM domain:14 code:PSVT argument:example-psvt
     ```
-    Below is the definition of "optimized-28h". It defines which PL1 is set at which sensor temperature.
-    So, under 50℃, PL1 is MAX, that is, 40W.
+    The PSVT entry defines which PL1 is set at which sensor temperature.
+    Here, under 50℃ PL1 is MAX (40W); from 60℃ it drops to 25W, and from 70℃ to 20W.
 
     ```
-    [1769055982][INFO]..psvt dump begin..
-    [1769055982][INFO]Name :optimized-28h
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:55 domain:9 control_knob:65536 psv.limit:20000
-    [1769055982][INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.ECDV.TMEM priority:2 sample_period:10 temp:65 domain:9 control_knob:65536 psv.limit:20000
+    [INFO]..psvt dump begin..
+    [INFO]Name :example-psvt
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:50 domain:9 control_knob:65536 psv.limit:MAX
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:60 domain:9 control_knob:65536 psv.limit:25000
+    [INFO] source:\_SB_.PC00.TCPU target:\_SB_.PC00.LPCB.EC0.SEN2 priority:2 sample_period:10 temp:70 domain:9 control_knob:65536 psv.limit:20000
     ```
 
 ## In Practice: Finding Out "Who Controls PL1/PL2" on Ubuntu
