@@ -13,7 +13,7 @@ down, and compare two runs (for example, two BIOS versions).
 
 ## thermal_stress_test.sh
 
-[Source](https://github.com/chinyakao/linux-platform-enablement/blob/main/thermal_stress_test.sh)
+[Source](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/thermal/thermal_stress_test.sh)
 
 Runs a staged CPU load with `stress-ng` and logs, once per interval:
 
@@ -30,16 +30,16 @@ sustain 600 90, cooldown 180 0.
 
 ```bash
 sudo apt-get install -y stress-ng linux-tools-common linux-tools-generic
-sudo OUT_ROOT=./logs INTERVAL=1 CPU_WORKERS=8 ./thermal_stress_test.sh
+sudo OUT_ROOT=./logs INTERVAL=1 CPU_WORKERS=8 ./tools/thermal/thermal_stress_test.sh
 ```
 
 ## analyze_compare.py
 
-[Source](https://github.com/chinyakao/linux-platform-enablement/blob/main/analyze_compare.py)
+[Source](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/thermal/analyze_compare.py)
 
 Summarizes a run (hottest zones, peak cooling state, lowest CPU frequency) or
 compares two runs.
 
 ```bash
-python3 analyze_compare.py logs/runA [logs/runB]
+python3 tools/thermal/analyze_compare.py logs/runA [logs/runB]
 ```
