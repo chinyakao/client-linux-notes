@@ -40,7 +40,7 @@ lang: zh
 *   thermald（或你手動）把 **MSR** PL1 改成 20W
 *   **MMIO/firmware 仍維持 PPCC/MAX=40W** 並週期性寫回 → **最終仍 40W**
 *   效果：你看到 MSR 短暫變 20W，但功耗/效能曲線依然貼近 40W  
-    **參考**：DPTF/ACPI 在 Linux 的資料路徑與 thermald 的角色；OEM 對 DTT/DPTF 的描述。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration), [\[dell.com\]](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=853yk)
+    **參考**：DPTF/ACPI 在 Linux 的資料路徑與 thermald 的角色。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 
 
 ## Log 中看到的 `optimized‑28h` 規則如何解讀

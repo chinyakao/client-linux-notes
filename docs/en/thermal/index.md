@@ -75,7 +75,7 @@ lang: en
         - Focuses on data transport, AI-based policy tuning, and OEM customization.
     - OS support: mainly Windows 10/11; Linux support is less complete than Windows.
     → DTT can be seen as the successor of DPTF, with more emphasis on telemetry and data-driven policy tuning.
-    **References**: Intel and vendor guides and technical explanations. [\[novintrades.com\]](https://www.novintrades.com/articles/5372?title=intel-dynamic-tuning-technology-complete-guide-practical-how-to), [\[mundobytes.com\]](https://mundobytes.com/en/What-is-Intel-DTT-Dynamic-Tuning-and-how-does-it-relate-to-APO/), [\[dell.com\]](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=853yk)
+    **References**: Intel and vendor guides and technical explanations. [\[novintrades.com\]](https://www.novintrades.com/articles/5372?title=intel-dynamic-tuning-technology-complete-guide-practical-how-to), [\[mundobytes.com\]](https://mundobytes.com/en/What-is-Intel-DTT-Dynamic-Tuning-and-how-does-it-relate-to-APO/)
 
 4. **thermald (Intel Thermal Daemon)**
     **Intel's official thermal daemon for Linux**
@@ -144,7 +144,7 @@ lang: en
 
 ## Summary
 
-*   **Linux thermal** is the kernel's native thermal management. **DPTF** is Intel's platform-level policy (through ACPI/firmware); Linux has drivers that can read it but **lacks ESIF**. **DTT** is Adaptix runtime tuning (mainly Windows/OEM). [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration), [\[dell.com\]](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=853yk)
+*   **Linux thermal** is the kernel's native thermal management. **DPTF** is Intel's platform-level policy (through ACPI/firmware); Linux has drivers that can read it but **lacks ESIF**. **DTT** is Adaptix runtime tuning (mainly Windows/OEM). [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 *   On Ubuntu, **thermald** only does "basic cooling"; it is **not** a complete DPTF policy engine. [\[github.com\]](https://github.com/intel/thermal_daemon)
 *   **PL1/PL2/Tau** decide long-term power, short-term power, and bursts. **MSR** is a CPU-level setting, **MMIO** is a platform-level setting, and **MMIO often overrides MSR**.
 *   The **`optimized‑28h`** you see is a **DPTF Passive Policy (PSVT)** entry in BIOS/ACPI. Ubuntu can "read" it but may not fully "apply" it; whether it takes effect is decided by **firmware/MMIO**. [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)

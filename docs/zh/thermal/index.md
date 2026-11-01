@@ -75,7 +75,7 @@ lang: zh
         - 更著重於「資料傳輸」「AI-based policy tuning」「OEM 可客製化」
     - OS 支援：主要針對 Windows 10/11，Linux 支援尚不如 Windows 完整  
     → DTT 可以視為 DPTF 的後繼者，但更側重 Telemetry 與資料驅動的政策 (policy) 調整  
-    **參考**：Intel/廠商導讀與技術說明。    [\[novintrades.com\]](https://www.novintrades.com/articles/5372?title=intel-dynamic-tuning-technology-complete-guide-practical-how-to), [\[mundobytes.com\]](https://mundobytes.com/en/What-is-Intel-DTT-Dynamic-Tuning-and-how-does-it-relate-to-APO/), [\[dell.com\]](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=853yk)
+    **參考**：Intel/廠商導讀與技術說明。    [\[novintrades.com\]](https://www.novintrades.com/articles/5372?title=intel-dynamic-tuning-technology-complete-guide-practical-how-to), [\[mundobytes.com\]](https://mundobytes.com/en/What-is-Intel-DTT-Dynamic-Tuning-and-how-does-it-relate-to-APO/)
 
 4. **thermald (Intel Thermal Daemon)**  
     **Intel 官方為 Linux 推出的溫控 daemon**  
@@ -144,7 +144,7 @@ lang: zh
 
 ## 總結
 
-*   **Linux Thermal** 是內核原生熱管理；**DPTF** 是 Intel 的平臺級策略 (靠 ACPI/firmware) ，Linux 有驅動可讀取，但 **缺 ESIF**；**DTT** 是 Adaptix 的 runtime 調諧 (主要 Windows/OEM) 。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration), [\[dell.com\]](https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=853yk)
+*   **Linux Thermal** 是內核原生熱管理；**DPTF** 是 Intel 的平臺級策略 (靠 ACPI/firmware) ，Linux 有驅動可讀取，但 **缺 ESIF**；**DTT** 是 Adaptix 的 runtime 調諧 (主要 Windows/OEM) 。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 *   **thermald** 在 Ubuntu 上只做「基礎降溫」，**不是** DPTF 的完整 policy engine。    [\[github.com\]](https://github.com/intel/thermal_daemon)
 *   **PL1/PL2/Tau** 決定長短期功耗與爆發；**MSR** 是 CPU 層的設定、**MMIO** 是平臺層設定，**MMIO 常覆蓋 MSR**。
 *   你看到的 **`optimized‑28h`** 是 **BIOS/ACPI 裡的 DPTF Passive Policy (PSVT)** 項目，Ubuntu 能「讀到」但未必能完整「執行」；實際是否生效由 **firmware/MMIO** 決定。    [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
