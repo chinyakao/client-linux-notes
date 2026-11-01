@@ -27,6 +27,7 @@ lang: en
 
 ## CPU die vs SoC die
 Both are "cores", but their purposes are completely different.
+
 | Die (Tile) | Core types on it | Purpose |
 | ------------- | ------------- | ------------- |
 | CPU die / Compute tile | P‑cores, E‑cores | General computing, games, multitasking |

@@ -105,6 +105,7 @@ lang: en
     **References**: thermald project README; kernel documentation for the DPTF sysfs interface. [\[github.com\]](https://github.com/intel/thermal_daemon), [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html)
 
 5. Table
+
     | Item | Intel DPTF | Intel DTT | thermald |
     | ---- | ---------- | --------- | -------- |
     | Main platform | Windows (limited Linux support) | Windows 10/11 | Linux |
