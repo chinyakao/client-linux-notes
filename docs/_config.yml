@@ -1,7 +1,7 @@
-title: Linux Training
+title: Linux Platform Enablement Notes
 description: Notes from Linux platform work on Ubuntu laptops and desktops
 url: "https://chinyakao.github.io"
-baseurl: "/linux_training"
+baseurl: "/linux-platform-enablement"
 remote_theme: just-the-docs/just-the-docs@v0.10.0
 plugins:
   - jekyll-remote-theme
@@ -16,14 +16,19 @@ heading_anchors: true
 color_scheme: light
 
 aux_links:
-  "GitHub": "https://github.com/chinyakao/linux_training"
+  "GitHub": "https://github.com/chinyakao/linux-platform-enablement"
 aux_links_new_tab: true
 
 gh_edit_link: true
 gh_edit_link_text: "Edit this page on GitHub"
-gh_edit_repository: "https://github.com/chinyakao/linux_training"
+gh_edit_repository: "https://github.com/chinyakao/linux-platform-enablement"
 gh_edit_branch: "main"
 gh_edit_source: docs
 gh_edit_view_mode: "tree"
 
-footer_content: "Written by Riley Kao. Files ending in _zh are in Traditional Chinese."
+footer_content: "Written by Riley Kao. Available in English and Traditional Chinese."
+
+# Search in Chinese works best with short keywords.
+search:
+  heading_level: 2
+  previews: 3
