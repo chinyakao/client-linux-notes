@@ -5,9 +5,9 @@ nav_exclude: true
 
 # Linux Platform Enablement Notes
 
-Notes from Linux platform work on Ubuntu laptops, desktops, and all-in-ones.
+Notes on Linux platform work: what I used and learned on the job.
 
-Linux 平台工程筆記：在筆電、桌機、AIO 上導入 Ubuntu 的經驗整理。
+Linux 平台工程筆記：整理工作上用到和學到的東西。
 
 [English](en/index.md){: .btn .btn-primary .mr-2 }
 [中文](zh/index.md){: .btn }

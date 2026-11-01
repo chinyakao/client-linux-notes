@@ -40,7 +40,7 @@ lang: en
 *   thermald (or you, by hand) changes the **MSR** PL1 to 20W
 *   **MMIO/firmware still keeps PPCC/MAX=40W** and writes it back periodically → **the final value is still 40W**
 *   Result: you see the MSR briefly at 20W, but the power/performance curve still stays close to 40W
-    **References**: the DPTF/ACPI data path on Linux and thermald's role; OEM descriptions of DTT/DPTF. [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
+    **References**: the DPTF/ACPI data path on Linux and thermald's role. [\[kernel.org\]](https://www.kernel.org/doc/html/latest/driver-api/thermal/intel_dptf.html), [\[deepwiki.com\]](https://deepwiki.com/intel/dptf/6-platform-integration)
 
 
 ## How to Read the `example-psvt` Rule in the Log

@@ -7,8 +7,8 @@ lang: en
 
 # Linux Platform Enablement Notes
 
-Notes from my work as a Linux platform engineer: bringing up Ubuntu on laptops,
-desktops, and all-in-ones, and debugging kernel, driver, power, thermal, and
+Notes on what I used and learned on the job as a Linux platform engineer:
+building and testing kernels, and debugging driver, power, thermal, and
 graphics issues. Every page is available in English and Traditional Chinese;
 use the switch at the top of the page.
 
