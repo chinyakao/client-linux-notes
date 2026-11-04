@@ -10,3 +10,4 @@ lang: en
 
 - [Intel iGPU fullscreen drop to 30 FPS](intel-graphics-fps.md)
 - [Intel P-core / E-core / LP E-core and BIOS options](intel-core-types.md)
+- [Intel NPU driver setup and CPU / GPU / NPU power measurement](intel-npu.md)
