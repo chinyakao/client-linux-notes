@@ -114,3 +114,36 @@ OpenVINO 固定輸入 `[8, 128]`（查詢延遲用 `[1, 128]`），每項至少�
 原始資料：[`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl)。
 
 **限制**：只量一次；只測 batch 8；`compile_s` 是有快取後的時間（冷啟動另測）。
+
+## 結果（2026-11-06，小型 LLM）
+
+模型：Qwen2.5-1.5B-Instruct，`optimum-cli` 轉成 int4（對稱、channel-wise），三個裝置用同一份。
+工作負載：3 個 kernel 問題，每題用 rag_minimal 檢索出的 RAG prompt（平均 781 個輸入 token），固定生成 128 個 token，每題跑 2 次。
+指令：`sudo -E python bench/bench_llm.py --model ov_models/qwen2.5-1.5b-int4`。
+
+| 裝置 | 第一個 token（TTFT） | 之後每秒 token | 每題總時間 | Package 功率 (W) | 每題能量（扣閒置） | NPU 使用率 |
+|---|---|---|---|---|---|---|
+| CPU | 2.61 s | **41.6** | 5.7 s | 30.5 | 155 J | 0% |
+| GPU | **0.50 s** | 33.7 | **4.3 s** | 21.8 | 79 J | 0% |
+| NPU | 1.85 s | 21.6 | 7.7 s | **12.2** | **69 J** | 97% |
+
+每題總時間 = TTFT + 127 × 每個 token 的時間。閒置 package 功率 3.3 W。
+
+**結論**
+
+- **讀 prompt（prefill）GPU 最快**：781 個 token 一次平行算完，GPU 比 NPU 快 3.7 倍、比 CPU 快 5 倍。
+- **逐字生成（decode）CPU 最快**：每個 token 都要把整個模型從記憶體讀一次，瓶頸是記憶體頻寬，不是算力。
+- **整體回答時間 GPU 最短**；NPU 最慢，但功率只有 GPU 的 56%。
+- **能量：NPU 和 GPU 接近**（扣閒置後 NPU 少約 13%），兩者都只有 CPU 的一半左右。
+- 回答品質：1.5B 模型的回答在 CVE 題目上前後矛盾、輸出簡體中文；這份量測只比速度與功耗。
+
+原始資料：[`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/llm_20261106_170440.jsonl)。
+
+## 總結：什麼工作交給哪個晶片
+
+| 工作 | 建議 | 原因 |
+|---|---|---|
+| 一次建大量索引 | GPU | 吞吐量是 NPU 的 2.6 倍 |
+| 一問一答的查詢 embedding | NPU | 最快（7.6 ms）且功率最低 |
+| LLM 生成回答，要快 | GPU | prefill 快，總時間最短 |
+| LLM 生成回答，要省電、背景執行 | NPU | 功率最低，不佔用 CPU 和 GPU |

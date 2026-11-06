@@ -118,3 +118,36 @@ Accuracy (`eval.py --oem`, 20 kernel questions): hit@3 is **13/18 = 0.72** for b
 Raw data: [`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl).
 
 **Limits**: single run; batch 8 only; `compile_s` is with a warm cache (cold start not measured yet).
+
+## Results (2026-11-06, small LLM)
+
+Model: Qwen2.5-1.5B-Instruct, converted to int4 (symmetric, channel-wise) with `optimum-cli`; the same files on all three devices.
+Workload: 3 kernel questions, each with the RAG prompt retrieved by rag_minimal (781 input tokens on average), a fixed 128 output tokens, 2 runs per question.
+Command: `sudo -E python bench/bench_llm.py --model ov_models/qwen2.5-1.5b-int4`.
+
+| Device | First token (TTFT) | Tokens/s after that | Time per answer | Package power (W) | Energy per answer (above idle) | NPU util |
+|---|---|---|---|---|---|---|
+| CPU | 2.61 s | **41.6** | 5.7 s | 30.5 | 155 J | 0% |
+| GPU | **0.50 s** | 33.7 | **4.3 s** | 21.8 | 79 J | 0% |
+| NPU | 1.85 s | 21.6 | 7.7 s | **12.2** | **69 J** | 97% |
+
+Time per answer = TTFT + 127 × time per token. Idle package power is 3.3 W.
+
+**Takeaways**
+
+- **The GPU is fastest at reading the prompt (prefill)**: 781 tokens in parallel, 3.7x faster than the NPU and 5x faster than the CPU.
+- **The CPU is fastest at generating token by token (decode)**: each token reads the whole model from memory, so memory bandwidth, not compute, is the limit.
+- **The GPU gives the shortest answer time**; the NPU is slowest but draws 56% of the GPU's power.
+- **Energy: NPU and GPU are close** (about 13% less on the NPU above idle), both about half of the CPU.
+- Answer quality: the 1.5B model contradicts itself on the CVE question and answers in Simplified Chinese; this run only compares speed and power.
+
+Raw data: [`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/llm_20261106_170440.jsonl).
+
+## Summary: which job goes to which chip
+
+| Job | Use | Why |
+|---|---|---|
+| Building a large index at once | GPU | 2.6x the NPU's throughput |
+| Embedding a single query | NPU | Fastest (7.6 ms) and lowest power |
+| LLM answers, as fast as possible | GPU | Fast prefill, shortest total time |
+| LLM answers, low power or in the background | NPU | Lowest power, leaves CPU and GPU free |
