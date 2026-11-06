@@ -111,4 +111,6 @@ OpenVINO 固定輸入 `[8, 128]`（查詢延遲用 `[1, 128]`），每項至少�
 - **換裝置不影響準確度**：向量幾乎一樣，hit@3 完全相同。
 - OpenVINO CPU 反而比 PyTorch 慢，可能是固定補到 128 token（PyTorch 只補到該 batch 最長）以及預設的延遲模式，待查。
 
+原始資料：[`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl)。
+
 **限制**：只量一次；只測 batch 8；`compile_s` 是有快取後的時間（冷啟動另測）。
