@@ -85,6 +85,30 @@ sudo ./tools/npu/measure_power.sh -- python bench/bench_embed.py --devices NPU
 - 第一次編譯（尤其 NPU）很久，要分開記「冷啟動編譯時間」與「快取後」。
 - 確認換裝置後結果一致：embedding 和 PyTorch 版本的 cosine 應接近 1，`eval.py` 的 hit@3 不應變差。
 
-## 結果
+## 結果（2026-11-06，embedding）
 
-尚未量測，實測後補上。
+環境：Meteor Lake 筆電（Core Ultra 7 155H，iGPU，NPU），Ubuntu，kernel 7.0，接電源。
+工作負載：[rag_minimal](https://github.com/chinyakao/rag_minimal) 的 `paraphrase-multilingual-MiniLM-L12-v2`，
+資料是 Ubuntu linux-oem-7.0 kernel changelog（18 個版本，3588 個 chunk）。
+OpenVINO 固定輸入 `[8, 128]`（查詢延遲用 `[1, 128]`），每項至少跑 10 秒。指令：`sudo -E python bench/bench_embed.py`。
+
+| 裝置 | 建索引 chunks/s | 相對 PyTorch | 查詢 p50 / p95 (ms) | Package 功率 (W) | CPU core 功率 (W) | J/chunk（扣閒置） | NPU 使用率 |
+|---|---|---|---|---|---|---|---|
+| PyTorch CPU（基準） | 48.8 | 1.0x | 12.2 / 13.9 | 43.0 | 35.4 | 0.83 | 0% |
+| OpenVINO CPU | 40.7 | 0.83x | 24.7 / 34.1 | 32.3 | 27.9 | 0.73 | 0% |
+| OpenVINO GPU | **299.2** | **6.1x** | 12.3 / 13.5 | 26.4 | 1.9 | 0.080 | 0% |
+| OpenVINO NPU | 113.9 | 2.3x | **7.6 / 8.8** | **9.6** | 0.7 | **0.062** | 94% |
+
+閒置 package 功率 2.6 W。四個裝置輸出的向量與 PyTorch 的 cosine 都是 1.000。
+
+準確度（`eval.py --oem`，20 題 kernel 題庫）：PyTorch 索引與 NPU 索引的 hit@3 都是 **13/18 = 0.72**，每題命中結果相同。
+
+**結論**
+
+- **吞吐量 GPU 最快**：大量建索引時 GPU 是 PyTorch CPU 的 6 倍。
+- **NPU 最省電、單筆延遲最低**：package 功率只有 9.6 W，是 GPU 的約 1/3、CPU 的約 1/4；扣掉閒置後每個 chunk 的能量比 GPU 少約 22%，比 CPU 少約 13 倍。
+- **工作真的在 NPU 上**：NPU 使用率 94%，同時 CPU core 功率只有 0.7 W。
+- **換裝置不影響準確度**：向量幾乎一樣，hit@3 完全相同。
+- OpenVINO CPU 反而比 PyTorch 慢，可能是固定補到 128 token（PyTorch 只補到該 batch 最長）以及預設的延遲模式，待查。
+
+**限制**：只量一次；只測 batch 8；`compile_s` 是有快取後的時間（冷啟動另測）。
