@@ -11,7 +11,9 @@ fail() { printf '  [FAIL] %s\n' "$*"; }
 
 echo "== Kernel and module =="
 echo "  kernel: $(uname -r)"
-if lsmod | grep -q '^intel_vpu'; then ok "intel_vpu loaded"; else fail "intel_vpu not loaded (sudo modprobe intel_vpu; needs kernel 6.8+ for Meteor Lake)"; fi
+# /sys/module is more reliable than `lsmod | grep -q` (grep -q exits early and
+# lsmod gets SIGPIPE, which pipefail reports as a failure)
+if [ -d /sys/module/intel_vpu ]; then ok "intel_vpu loaded"; else fail "intel_vpu not loaded (sudo modprobe intel_vpu; needs kernel 6.8+ for Meteor Lake)"; fi
 lspci -nn 2>/dev/null | grep -iE 'npu|vpu|processing accelerator' | sed 's/^/  pci: /'
 
 echo "== Device node and permissions =="
@@ -30,8 +32,15 @@ dmesg 2>/dev/null | grep -iE 'intel_vpu|ivpu' | tail -5 | sed 's/^/  dmesg: /' |
 [ -z "$(dmesg 2>/dev/null | head -1)" ] && warn "dmesg not readable, rerun with sudo to see firmware version"
 
 echo "== User-space packages (intel/linux-npu-driver) =="
-dpkg -l 2>/dev/null | grep -E 'intel-(driver-compiler-npu|fw-npu|level-zero-npu)|libze1|level-zero' \
-  | awk '{printf "  %-35s %s\n", $2, $3}' || warn "dpkg not available"
+if command -v dpkg-query >/dev/null; then
+  pkgs=$(dpkg-query -W -f='${Status} ${Package} ${Version}\n' 2>/dev/null \
+    | awk '/^install ok installed/ && $4 ~ /^(intel-driver-compiler-npu|intel-fw-npu|intel-level-zero-npu|libze1|libze-intel-gpu1|level-zero)/ {printf "  %-35s %s\n", $4, $5}')
+  if [ -n "$pkgs" ]; then echo "$pkgs"
+  else fail "no NPU user-space packages: install the .deb files from github.com/intel/linux-npu-driver/releases"; fi
+  echo "$pkgs" | grep -q intel-level-zero-npu || warn "intel-level-zero-npu missing: OpenVINO will not list NPU"
+else
+  warn "dpkg-query not available (not a Debian/Ubuntu system?)"
+fi
 
 echo "== sysfs counters used by the benchmark =="
 for f in /sys/class/accel/accel0/device/npu_busy_time_us; do
