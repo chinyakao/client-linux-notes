@@ -115,4 +115,6 @@ Accuracy (`eval.py --oem`, 20 kernel questions): hit@3 is **13/18 = 0.72** for b
 - **Switching devices does not change accuracy**: the vectors are effectively identical and hit@3 is the same.
 - OpenVINO CPU is slower than PyTorch, likely because it always pads to 128 tokens (PyTorch pads to the longest in the batch) and uses the default latency hint; still to check.
 
+Raw data: [`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl).
+
 **Limits**: single run; batch 8 only; `compile_s` is with a warm cache (cold start not measured yet).
