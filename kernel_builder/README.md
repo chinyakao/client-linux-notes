@@ -12,5 +12,5 @@ Each folder holds a Dockerfile and kernel config for one kernel source:
 | [`oem-6.17-builder/`](oem-6.17-builder/) | Ubuntu OEM 6.17 |
 
 The step-by-step build guide is on the
-[website](https://chinyakao.github.io/linux-platform-enablement/kernel-build/)
+[website](https://chinyakao.github.io/client-linux-notes/kernel-build/)
 ([source](../docs/kernel-build/index.md)).
