@@ -1,7 +1,7 @@
-title: Linux Platform Enablement Notes
+title: Client Linux Notes
 description: Notes from Linux platform work on Ubuntu laptops and desktops
 url: "https://chinyakao.github.io"
-baseurl: "/linux-platform-enablement"
+baseurl: "/client-linux-notes"
 remote_theme: just-the-docs/just-the-docs@v0.10.0
 plugins:
   - jekyll-remote-theme
@@ -16,12 +16,12 @@ heading_anchors: true
 color_scheme: light
 
 aux_links:
-  "GitHub": "https://github.com/chinyakao/linux-platform-enablement"
+  "GitHub": "https://github.com/chinyakao/client-linux-notes"
 aux_links_new_tab: true
 
 gh_edit_link: true
 gh_edit_link_text: "Edit this page on GitHub"
-gh_edit_repository: "https://github.com/chinyakao/linux-platform-enablement"
+gh_edit_repository: "https://github.com/chinyakao/client-linux-notes"
 gh_edit_branch: "main"
 gh_edit_source: docs
 gh_edit_view_mode: "tree"

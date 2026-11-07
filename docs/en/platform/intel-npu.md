@@ -55,7 +55,7 @@ The kernel driver is in mainline; the user-space parts come from the
    python -c "import openvino as ov; print(ov.Core().available_devices)"   # ['CPU', 'GPU', 'NPU']
    ```
 
-All checks in one script: [`tools/npu/check_npu.sh`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/check_npu.sh).
+All checks in one script: [`tools/npu/check_npu.sh`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/check_npu.sh).
 
 ## How to measure power
 
@@ -72,7 +72,7 @@ On Meteor Lake the NPU sits on the SoC tile and RAPL has no NPU domain, so:
   because a faster device can draw more power yet use less energy in total.
 - **Use NPU busy time to confirm the job really ran on the NPU**: utilization should rise and CPU `Busy%` should stay low.
 
-[`tools/npu/measure_power.sh`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/measure_power.sh)
+[`tools/npu/measure_power.sh`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/measure_power.sh)
 records an idle baseline, runs any command while logging turbostat and NPU busy time, then prints average power
 and energy above idle:
 
@@ -115,7 +115,7 @@ Accuracy (`eval.py --oem`, 20 kernel questions): hit@3 is **13/18 = 0.72** for b
 - **Switching devices does not change accuracy**: the vectors are effectively identical and hit@3 is the same.
 - OpenVINO CPU is slower than PyTorch, likely because it always pads to 128 tokens (PyTorch pads to the longest in the batch) and uses the default latency hint; still to check.
 
-Raw data: [`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl).
+Raw data: [`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/results/embed_20261106_161532.jsonl).
 
 **Limits**: single run; batch 8 only; `compile_s` is with a warm cache (cold start not measured yet).
 
@@ -141,7 +141,7 @@ Time per answer = TTFT + 127 × time per token. Idle package power is 3.3 W.
 - **Energy: NPU and GPU are close** (about 13% less on the NPU above idle), both about half of the CPU.
 - Answer quality: the 1.5B model contradicts itself on the CVE question and answers in Simplified Chinese; this run only compares speed and power.
 
-Raw data: [`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/llm_20261106_170440.jsonl).
+Raw data: [`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/results/llm_20261106_170440.jsonl).
 
 ## Summary: which job goes to which chip
 

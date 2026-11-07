@@ -5,9 +5,9 @@ has_children: true
 lang: zh
 ---
 
-# Linux Platform Enablement 筆記
+# Client Linux 學習筆記
 
-整理我在 Linux 平台工程工作上用到和學到的東西：編譯與測試 kernel，以及除錯 driver、電源、散熱、顯示相關問題。每一頁都有英文與繁體中文版本，可以用頁面上方的切換連結切換。
+我學習 Linux 筆電與桌機相關主題的筆記：編譯與測試 kernel，以及除錯 driver、電源、散熱、顯示相關問題。每一頁都有英文與繁體中文版本，可以用頁面上方的切換連結切換。
 
 | 分類 | 內容 |
 |---|---|
