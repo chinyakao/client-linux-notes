@@ -54,7 +54,7 @@ kernel 驅動已經在 mainline，user-space 部分來自
    python -c "import openvino as ov; print(ov.Core().available_devices)"   # ['CPU', 'GPU', 'NPU']
    ```
 
-一次檢查全部：[`tools/npu/check_npu.sh`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/check_npu.sh)。
+一次檢查全部：[`tools/npu/check_npu.sh`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/check_npu.sh)。
 
 ## 功耗怎麼量
 
@@ -70,7 +70,7 @@ Meteor Lake 的 NPU 在 SoC tile 上，RAPL 沒有單獨的 NPU domain，所以�
 - **比能量效率**：每個 chunk 或每個 token 花多少焦耳（J/chunk、J/token），比單看瓦數更公平，因為跑得快的裝置雖然瓦數高，但總能量可能較少。
 - **用 NPU busy time 確認工作真的在 NPU 上**：跑 NPU 時使用率應明顯上升，CPU `Busy%` 應該不高。
 
-[`tools/npu/measure_power.sh`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/measure_power.sh)
+[`tools/npu/measure_power.sh`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/measure_power.sh)
 會先量一段閒置，再執行任意指令，同時記錄 turbostat 與 NPU busy time，最後印出平均功率與高於閒置的能量：
 
 ```bash
@@ -111,7 +111,7 @@ OpenVINO 固定輸入 `[8, 128]`（查詢延遲用 `[1, 128]`），每項至少�
 - **換裝置不影響準確度**：向量幾乎一樣，hit@3 完全相同。
 - OpenVINO CPU 反而比 PyTorch 慢，可能是固定補到 128 token（PyTorch 只補到該 batch 最長）以及預設的延遲模式，待查。
 
-原始資料：[`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/embed_20261106_161532.jsonl)。
+原始資料：[`tools/npu/results/embed_20261106_161532.jsonl`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/results/embed_20261106_161532.jsonl)。
 
 **限制**：只量一次；只測 batch 8；`compile_s` 是有快取後的時間（冷啟動另測）。
 
@@ -137,7 +137,7 @@ OpenVINO 固定輸入 `[8, 128]`（查詢延遲用 `[1, 128]`），每項至少�
 - **能量：NPU 和 GPU 接近**（扣閒置後 NPU 少約 13%），兩者都只有 CPU 的一半左右。
 - 回答品質：1.5B 模型的回答在 CVE 題目上前後矛盾、輸出簡體中文；這份量測只比速度與功耗。
 
-原始資料：[`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/npu/results/llm_20261106_170440.jsonl)。
+原始資料：[`tools/npu/results/llm_20261106_170440.jsonl`](https://github.com/chinyakao/client-linux-notes/blob/main/tools/npu/results/llm_20261106_170440.jsonl)。
 
 ## 總結：什麼工作交給哪個晶片
 

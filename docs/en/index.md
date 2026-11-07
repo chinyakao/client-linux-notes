@@ -5,9 +5,9 @@ has_children: true
 lang: en
 ---
 
-# Linux Platform Enablement Notes
+# Client Linux Notes
 
-Notes on what I used and learned on the job as a Linux platform engineer:
+My study notes on Linux for laptops and desktops:
 building and testing kernels, and debugging driver, power, thermal, and
 graphics issues. Every page is available in English and Traditional Chinese;
 use the switch at the top of the page.

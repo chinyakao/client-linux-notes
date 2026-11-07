@@ -1,9 +1,9 @@
-# Linux Platform Enablement Notes
+# Client Linux Notes
 
-Notes, scripts, and build environments for Linux platform work, collected from
-what I used and learned on the job.
+My study notes on Linux for laptops and desktops, with the scripts and build
+environments I wrote while learning.
 
-**Read it as a website: <https://chinyakao.github.io/linux-platform-enablement/>**
+**Read it as a website: <https://chinyakao.github.io/client-linux-notes/>**
 
 ## Layout
 
