@@ -12,7 +12,7 @@ Repo 根目錄有兩個腳本，用來量測平台的升溫與降溫行為，並
 
 ## thermal_stress_test.sh
 
-[原始碼](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/thermal/thermal_stress_test.sh)
+[原始碼](https://github.com/chinyakao/client-linux-notes/blob/main/tools/thermal/thermal_stress_test.sh)
 
 用 `stress-ng` 分階段加壓，每個間隔記錄：
 
@@ -33,7 +33,7 @@ sudo OUT_ROOT=./logs INTERVAL=1 CPU_WORKERS=8 ./tools/thermal/thermal_stress_tes
 
 ## analyze_compare.py
 
-[原始碼](https://github.com/chinyakao/linux-platform-enablement/blob/main/tools/thermal/analyze_compare.py)
+[原始碼](https://github.com/chinyakao/client-linux-notes/blob/main/tools/thermal/analyze_compare.py)
 
 整理一次測試的摘要（最熱的 zone、cooling state 最高值、最低 CPU 頻率），或比較兩次測試。
 

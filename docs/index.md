@@ -3,11 +3,11 @@ title: Home
 nav_exclude: true
 ---
 
-# Linux Platform Enablement Notes
+# Client Linux Notes
 
-Notes on Linux platform work: what I used and learned on the job.
+My study notes on Linux for laptops and desktops.
 
-Linux 平台工程筆記：整理工作上用到和學到的東西。
+Linux 筆電與桌機的學習筆記。
 
 [English](en/index.md){: .btn .btn-primary .mr-2 }
 [中文](zh/index.md){: .btn }
