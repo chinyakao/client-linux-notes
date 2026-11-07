@@ -32,4 +32,3 @@ Both are "cores", but their purposes are completely different.
 | ------------- | ------------- | ------------- |
 | CPU die / Compute tile | P‑cores, E‑cores | General computing, games, multitasking |
 | SoC die / SoC tile | LP E‑cores / Atom cores | Standby, background, keeping the system alive at low power |
-
