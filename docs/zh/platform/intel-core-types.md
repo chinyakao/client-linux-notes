@@ -32,4 +32,3 @@ lang: zh
 | ------------- | ------------- | ------------- |
 | CPU die / Compute tile | P‑cores、E‑cores | 一般運算、遊戲、多工 |
 | SoC die / SoC tile | LP E‑cores / Atom cores | 待機、背景、節能系統維持 |
-

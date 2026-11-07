@@ -6,152 +6,105 @@ nav_order: 1
 lang: zh
 ---
 
-# Intel iGPU（PCI ID: 8086:xxxx）+ Linux kernel  
-## i915 Driver 載入確認與 Fullscreen 掉到 30 FPS 排查筆記
+# Intel iGPU：全螢幕掉到 30 FPS
+## 先確認顯示 driver 有載入，再找出是誰讓 FPS 減半
 
-## 使用情境
+## 症狀
 
-- Intel 新世代 iGPU（此機器僅看到一個 PCI ID：`8086:xxxx`）
-- Linux kernel：`<version>`
-- 顯示系統：Xorg / XWindow
-- 症狀：**進入 fullscreen 時，refresh rate / fps 從 60 掉到 30，畫面 lag**
+- 筆電上的 Intel 內顯
+- 顯示系統：Xorg / X Window
+- 全螢幕時更新率 / FPS 從 60 掉到 30，畫面卡頓
 
+## 0. 先講結論
 
-
-## 0. 一句話結論（給未來的自己）
-
-- ✅ **kernel 本身幾乎一定支援 <device-id>**
-- ❌ **60 → 30 fps 通常不是效能不足，而是被省電 / 同步機制「半速」了**
-- 🎯 最常見兇手：
+- 60 → 30 FPS 通常**不是** GPU 效能不夠，而是某個省電或同步機制讓畫面「半速」運作。
+- 最常見的原因：
   - PSR（Panel Self Refresh）
   - DRRS（Dynamic Refresh Rate Switching）
-  - GuC / HuC firmware
-  - Xorg fullscreen + compositor pipeline
+  - GuC / HuC firmware 沒載入
+  - Xorg 全螢幕 + compositor 的路徑
+- 排查順序：driver 有沒有綁上 → 是不是硬體繪圖 → 哪個省電功能讓更新率減半。
 
+## 1. iGPU 有沒有綁上 kernel driver？
 
+較新的 Intel GPU 會依平台和 kernel 版本使用 `i915` 或較新的 `xe` driver。步驟都一樣，換成你看到的模組名稱即可。
 
-## 1. 初步判斷：iGPU 是否被 i915 接管
-
-### 1.1 確認 PCI ID
+### 1.1 找出裝置和 PCI ID
 
 ```bash
 lspci -nn | grep -E "VGA|Display"
 ```
 
-應看到類似：
+記下 `[8086:xxxx]` 這個 ID。新平台可能會出現多個 function，只看到一個也正常。
 
-    Intel Corporation Device [8086:xxxx]
-
-> 新世代平台可能有多 function / tile；僅看到一個 <device-id> 亦屬正常。
-
-
-
-### 1.2 確認 kernel driver in use
+### 1.2 目前用的是哪個 driver
 
 ```bash
 lspci -nnk | grep -A3 -E "VGA|Display"
 ```
 
-理想狀態：
+判讀方式：
 
-    Kernel driver in use: i915
-    Kernel modules: i915
+*   `Kernel driver in use: i915`（或 `xe`）→ driver 已經綁上
+*   只有 `Kernel modules:`，沒有 `driver in use` → probe 失敗、裝置需要 `force_probe`，或模組被 blacklist
+*   完全沒有 driver → kernel 太舊不認得這顆 GPU，或缺少模組
 
-判讀：
-
-*   ✅ `driver in use: i915` → 已 attach
-*   ⚠️ 只有 `Kernel modules` → probe 失敗 / force\_probe / blacklist
-*   ❌ 沒有 i915 → kernel / module 問題
-
-
-
-### 1.3 確認 i915 module
+### 1.3 模組有沒有載入
 
 ```bash
-lsmod | grep ^i915
+lsmod | grep -E "^(i915|xe)"
+sudo modprobe i915   # 手動載入測試
 ```
 
-測試用手動載入：
+### 1.4 看 dmesg 的 probe 結果
 
 ```bash
-sudo modprobe i915
+dmesg | grep -i -E "i915|xe "
 ```
 
+注意這些關鍵字：
 
+*   `Device is not supported` / `force_probe` → kernel 認得這個 ID，但預設沒有啟用
+*   `Failed to load ... firmware`（DMC / GuC / HuC）→ 更新 `linux-firmware`
 
-### 1.4 檢查 dmesg probe 結果
-
-```bash
-dmesg | grep -i i915
-```
-
-注意關鍵字：
-
-*   `Device is not supported`
-*   `force_probe`
-*   `Failed to load ... firmware`（DMC / GuC / HuC）
-
-
-
-## 2. 確認是否落到 llvmpipe（軟繪圖）
-
-### 2.1 OpenGL renderer
+## 2. 是不是退回軟體繪圖（llvmpipe）？
 
 ```bash
 glxinfo | grep -E "OpenGL renderer|OpenGL version"
-```
-
-*   ✅ Mesa Intel renderer
-*   ❌ `llvmpipe` → CPU 軟繪圖
-
-> 穩定卡在 30 fps 通常不是 llvmpipe，而是同步 / 省電。
-
-
-
-### 2.2 DRM device
-
-```bash
 ls -l /dev/dri
 ```
 
-應看到 `card0`、`renderD128`。
+*   Mesa Intel renderer → 硬體繪圖
+*   `llvmpipe` → CPU 軟體繪圖，回到第 1 步檢查
+*   `/dev/dri` 底下應該有 `card0` 和 `renderD128`
 
+> 穩定卡在 30 FPS 通常不是 llvmpipe（那會又慢又不穩），而是同步或省電機制。
 
+## 3. 為什麼剛好是 30 FPS？
 
-## 3. 為什麼會「剛好掉到 30 fps」？
-
-**30 fps 是訊號，不是巧合。**
-
-代表：
-
-*   refresh rate / vblank 被 halved（60 → 30）
-*   而非 GPU rendering 跑不動
+**30 FPS 是一個訊號，不是巧合。**代表更新率 / vblank 被減半（60 → 30），而不是繪圖跟不上。
 
 常見原因：
 
 *   PSR（Panel Self Refresh）
-*   DRRS（60 / 48 / 30 Hz 切換）
+*   DRRS（在 60 / 48 / 30 Hz 之間切換）
 *   Display DC states / clock gating
-*   Xorg Present / page flip / compositor 誤判 static scene
+*   Xorg Present / page flip / compositor 把畫面誤判成靜態
 
+## 4. 頭號嫌疑：PSR
 
-
-## 4. 第一順位兇手：PSR
-
-### 4.1 檢查 PSR 狀態
+### 4.1 查看 PSR 狀態
 
 ```bash
 sudo mount -t debugfs none /sys/kernel/debug
-cat /sys/kernel/debug/dri/0/i915_edp_psr_status
+sudo cat /sys/kernel/debug/dri/0/i915_edp_psr_status
 ```
 
-若顯示 `PSR enabled` / `PSR2 enabled` → 高度可疑。
+如果顯示 `PSR enabled` / `PSR2 enabled`，PSR 嫌疑很大。
 
+### 4.2 關掉 PSR 驗證
 
-
-### 4.2 驗證：關掉 PSR
-
-Kernel cmdline：
+在 kernel cmdline 加上：
 
     i915.enable_psr=0
 
@@ -163,109 +116,66 @@ sudo update-grub
 sudo reboot
 ```
 
-✅ Fullscreen 回到 60 fps → **PSR 確診**
+全螢幕回到 60 FPS → 確認是 PSR。
 
+## 5. 第二嫌疑：DRRS
 
-
-## 5. 第二順位兇手：DRRS
-
-DRRS 會在以下間切換：
-
-*   60 Hz
-*   48 Hz
-*   30 Hz
-
-關閉 DRRS：
+DRRS 會讓面板在 60、48、30 Hz 之間切換。關掉比較看看：
 
     i915.enable_drrs=0
 
-> 常見情況是 **PSR + DRRS 疊加**。
-
-
+> PSR 和 DRRS 常常一起出現。
 
 ## 6. GuC / HuC firmware
-
-### 6.1 檢查 firmware 狀態
 
 ```bash
 dmesg | grep -i -E "guc|huc|dmc"
 ```
 
-理想訊息：
+正常應該看到 `GuC firmware ... loaded`、`HuC firmware authenticated`。載入失敗的話先更新 `linux-firmware`。
 
-*   `GuC firmware loaded`
-*   `HuC firmware authenticated`
-
-失敗時先更新 `linux-firmware`。
-
-
-
-### 6.2（測試用）強制啟用 GuC
+測試時可以強制開啟 GuC/HuC：
 
     i915.enable_guc=3
 
+## 7. Xorg / Compositor
 
-
-## 7. Xorg / compositor 問題
-
-### 7.1 Session type
+### 7.1 Session 類型
 
 ```bash
 echo $XDG_SESSION_TYPE
 ```
 
-*   `x11`：較容易踩雷
-*   `wayland`：刷新率管理較穩
+*   `x11` → 比較容易遇到這個問題
+*   `wayland` → 更新率管理通常比較穩定
 
-
-
-### 7.2 Compositor（picom）
+### 7.2 Compositor
 
 ```bash
 picom --no-vsync
 ```
 
-或關閉 compositor 做比較。
-
-
+或直接關掉 compositor 比較。
 
 ### 7.3 Xorg driver
 
-新平台建議使用 `modesetting`，避免舊的 `intel` DDX。
+新平台請用 `modesetting`，不要用舊的 `intel` DDX：
 
 ```bash
 grep -i "driver" /var/log/Xorg.0.log | head
 ```
 
-
-
-## 8. 確認不是 GPU 效能不足
-
-### 8.1 GPU clock
+## 8. 排除 GPU 效能不足
 
 ```bash
-cat /sys/kernel/debug/dri/0/i915_frequency_info
-```
-
-Fullscreen 時 GPU clock 長期偏低 → power / display issue。
-
-
-
-### 8.2 即時觀察
-
-```bash
+sudo cat /sys/kernel/debug/dri/0/i915_frequency_info
 sudo apt install intel-gpu-tools
-intel_gpu_top
+sudo intel_gpu_top
 ```
 
-特徵：
+如果 GPU 使用率不高、時脈也一直很低，FPS 卻固定在 30，就是電源或顯示的問題，不是效能。
 
-*   GPU usage 不高
-*   fps 卻固定 30
-
-
-
-## 9. Xorg 下的穩定建議參數組合
+## 9. A/B 測試
 
 ```text
 i915.enable_psr=0
@@ -273,40 +183,29 @@ i915.enable_drrs=0
 i915.enable_guc=3
 ```
 
-建議一次只調一個做 A/B test。
-
-
+**一次只改一個參數**並記錄結果，才知道是哪一個解決了問題。
 
 ## 10. 長期解法
 
-👉 **改用 Wayland**
+改用 Wayland session，大多數情況下 60 → 30 FPS 的問題就會消失。
 
-大多數情況下，60 → 30 fps 問題會直接消失。
-
-
-
-## 11. 快速 Debug Checklist
+## 11. 快速排查清單
 
 ```bash
 uname -r
-lspci -nn | grep -E "VGA|Display"
 lspci -nnk | grep -A3 -E "VGA|Display"
-lsmod | grep ^i915
-dmesg | grep -i i915
-dmesg | grep -i -E "guc|huc|dmc|psr|drrs"
+lsmod | grep -E "^(i915|xe)"
+dmesg | grep -i -E "i915|guc|huc|dmc|psr|drrs"
 glxinfo | grep -E "OpenGL renderer|OpenGL version"
-sudo mount -t debugfs none /sys/kernel/debug
-cat /sys/kernel/debug/dri/0/i915_edp_psr_status
-cat /sys/kernel/debug/dri/0/i915_frequency_info
-intel_gpu_top
+sudo cat /sys/kernel/debug/dri/0/i915_edp_psr_status
+sudo cat /sys/kernel/debug/dri/0/i915_frequency_info
+sudo intel_gpu_top
 echo $XDG_SESSION_TYPE
 ```
-
-
 
 ## 12. Kernel cmdline 速查
 
 *   關 PSR：`i915.enable_psr=0`
 *   關 DRRS：`i915.enable_drrs=0`
 *   開 GuC/HuC：`i915.enable_guc=3`
-*   force probe（僅 probe 失敗時）：`i915.force_probe=<pci-device-id>`
+*   強制 probe（只在 probe 失敗時用）：`i915.force_probe=<pci-device-id>`
